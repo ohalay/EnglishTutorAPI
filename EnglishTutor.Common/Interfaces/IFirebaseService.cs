@@ -8,6 +8,11 @@ namespace EnglishTutor.Common.Interfaces
     {
         Task<IEnumerable<Word>> GetWordsAsync(params string[] wordNames);
 
-        Task<IEnumerable<Statistic>> GetStatisticAsync(string userId, int limitTo);
+        Task<IEnumerable<Statistic>> GetStatisticAsync(string userId, int? limitTo);
+
+        Task<Statistic> UpdateStatisticAsync(string userId, Statistic statistic);
+
+        Task<Word> UpdateWordAsync(Word statistic);
+
     }
 }

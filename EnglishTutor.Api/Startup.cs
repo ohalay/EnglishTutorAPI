@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using EnglishTutor.Common.Interfaces;
 using EnglishTutor.Services;
+using EnglishTutor.Common;
 
 namespace EnglishTutor.Api
 {
@@ -30,8 +27,18 @@ namespace EnglishTutor.Api
         public void ConfigureServices(IServiceCollection services)
         {
             // Add framework services.
-            services.AddMvc();
+            services.AddMvc().AddJsonOptions(option => 
+            {
+                option.SerializerSettings.NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore;
+            });
+
+            services.AddOptions();
+            services.Configure<AppSettings>(Configuration);
+
             services.AddTransient<IFirebaseService, FirebaseService>();
+            services.AddTransient<IOxforDictionaryService, OxforDictionaryService>();
+
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

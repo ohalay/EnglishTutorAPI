@@ -14,7 +14,7 @@ namespace EnglishTutor.Services.Tests
         [TestInitialize]
         public void Init()
         {
-            _service = new FirebaseService();
+            //_service = new FirebaseService();
         }
 
         [TestMethod]
