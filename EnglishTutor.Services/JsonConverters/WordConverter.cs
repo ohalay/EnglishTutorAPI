@@ -19,7 +19,7 @@ public class WordConverter : JsonConverter
 
         var lexicalEntry = obj.SelectToken("results[0].lexicalEntries[0]");
 
-        var pronunciaton = lexicalEntry.SelectToken("pronunciaton[?(@.audioFile)]");
+        var pronunciaton = lexicalEntry.SelectToken("pronunciations[?(@.audioFile)]");
         if (pronunciaton.HasValues)
         {
             word.PhoneticSpelling = pronunciaton.Value<string>("phoneticSpelling");
