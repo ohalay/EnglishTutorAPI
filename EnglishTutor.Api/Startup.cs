@@ -41,9 +41,11 @@ namespace EnglishTutor.Api
             services.AddOptions();
             services.Configure<OxforDictionary>(Configuration.GetSection("OxforDictionary"));
             services.Configure<Firebase>(Configuration.GetSection("Firebase"));
+            services.Configure<Translate>(Configuration.GetSection("Translate"));
 
             services.AddTransient<IFirebaseService, FirebaseService>();
             services.AddTransient<IOxforDictionaryService, OxforDictionaryService>();
+            services.AddTransient<ITranslateService, TranslateService>();
 
             services.AddSingleton(LogManager.GetLogger("log4netRepository", "logger"));
 

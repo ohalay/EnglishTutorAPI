@@ -26,7 +26,7 @@ namespace EnglishTutor.Services
             return new List<Tuple<string, string>>();
         }
 
-        protected async Task<T> SendRequest<T>(HttpMethod method, string url, object body = null,  Func<string, Task<T>> deserialize = null)
+        protected async Task<T> SendRequest<T>(HttpMethod method, string url, object body = null,  JsonConverter deserializeConverter = null)
         {
             try
             {
@@ -46,10 +46,9 @@ namespace EnglishTutor.Services
 
                 var stringResponce = await response.Content.ReadAsStringAsync();
 
-                if (deserialize == null)
-                    return JsonConvert.DeserializeObject<T>(stringResponce);
-                else
-                    return await deserialize(stringResponce);
+                return deserializeConverter == null ? 
+                    JsonConvert.DeserializeObject<T>(stringResponce) 
+                    : JsonConvert.DeserializeObject<T>(stringResponce, deserializeConverter);
             }
             catch(HttpRequestException e)
             {

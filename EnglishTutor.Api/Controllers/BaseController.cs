@@ -11,10 +11,12 @@ namespace EnglishTutor.Api.Controllers
     {
         protected ResponseModel<T> GenerateResult<T>(IEnumerable<T> input)
         {
+            var list = input.ToList();
+
             return new ResponseModel<T>()
             {
-                Result = input,
-                Total = input.Count()
+                Result = list,
+                Total = list.Count
             };
         }
 
@@ -31,19 +33,10 @@ namespace EnglishTutor.Api.Controllers
             get { return "115787596179138188666"; }
         }
 
-        protected async Task<JsonResult> ExecuteResult<T>(Func<Task<T>> func)
+        protected JsonResult GenerateJsonResult<T>(T result)
         {
-            try
-            {
-                var res = await func();
-                var jsonResult = new JsonResult(GenerateResult(res));
+                var jsonResult = new JsonResult(GenerateResult(result));
                 return jsonResult;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                throw;
-            }
         }
     }
 }

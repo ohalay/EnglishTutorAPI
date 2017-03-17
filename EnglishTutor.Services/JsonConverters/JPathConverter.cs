@@ -1,30 +1,33 @@
-﻿using Newtonsoft.Json;
+﻿using System;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System;
 
-public class JPathConverter : JsonConverter
+namespace EnglishTutor.Services.JsonConverters
 {
-    private string _path;
-
-    public JPathConverter(string path)
+    public class JPathConverter : JsonConverter
     {
-        _path = path;
-    }
-    public override bool CanConvert(Type objectType)
-    {
-        return typeof(string) == objectType;
-    }
+        private string _path;
 
-    public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
-    {
-        JObject obj = JObject.Load(reader);
+        public JPathConverter(string path)
+        {
+            _path = path;
+        }
+        public override bool CanConvert(Type objectType)
+        {
+            return typeof(string) == objectType;
+        }
 
-        return (string)obj.SelectToken(_path);
+        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        {
+            JObject obj = JObject.Load(reader);
+
+            return (string)obj.SelectToken(_path);
    
-    }
+        }
 
-    public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
-    {
-        throw new NotImplementedException();
+        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

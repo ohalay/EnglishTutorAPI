@@ -3,11 +3,10 @@ using System;
 using System.Collections.Generic;
 using EnglishTutor.Common.Dto;
 using System.Threading.Tasks;
-using EnglishTutor.Common;
 using Microsoft.Extensions.Options;
 using System.Net.Http;
 using EnglishTutor.Common.AppSettings;
-using Newtonsoft.Json;
+using EnglishTutor.Services.JsonConverters;
 
 namespace EnglishTutor.Services
 {
@@ -34,26 +33,18 @@ namespace EnglishTutor.Services
 
         public async Task<string> GetNormalizedWordAsync(string name)
         {
-            return await SendRequest(HttpMethod.Get
+            return await SendRequest<string>(HttpMethod.Get
                 , $"search/{LANG}?q={name}&prefix=false&limit=2&offset=0"
                 , null
-                , async str =>
-                {
-                    var normalizedName = JsonConvert.DeserializeObject<string>(str, new JPathConverter("results[0].word"));
-                    return await Task.FromResult(normalizedName);
-                });
+                ,new JPathConverter("results[0].word"));
         }
 
         public async Task<Word> GetWordAsync(string name)
         {
-            return await SendRequest(HttpMethod.Get
+            return await SendRequest<Word>(HttpMethod.Get
                  , $"entries/{LANG}/{name}"
                  , null
-                 , async str =>
-                 {
-                     var normalizedName = JsonConvert.DeserializeObject<Word>(str, new WordConverter());
-                     return await Task.FromResult(normalizedName);
-                 });
+                 , new WordConverter());
         }
     }
 }

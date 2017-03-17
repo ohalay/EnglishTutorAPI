@@ -4,8 +4,8 @@ using EnglishTutor.Common.Dto;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Net.Http;
-using Newtonsoft.Json;
 using EnglishTutor.Common.AppSettings;
+using EnglishTutor.Services.JsonConverters;
 using Microsoft.Extensions.Options;
 
 namespace EnglishTutor.Services
@@ -28,14 +28,11 @@ namespace EnglishTutor.Services
 
         public async Task<IEnumerable<Statistic>> GetStatisticAsync(string userId, int? limitTo)
         {
-            return await SendRequest(HttpMethod.Get
+            return await SendRequest<IEnumerable<Statistic>>(HttpMethod.Get
                 , $"users/{userId}/statistics.json?orderBy=\"timestamp\"&limitToLast={limitTo}"
-                ,null
-                , async str => 
-                {
-                    var list = JsonConvert.DeserializeObject<IEnumerable<Statistic>>(str, new StatisticConverter());
-                    return await Task.FromResult(list);
-                });
+                , null
+                , new StatisticConverter());
+
         }
 
         public async Task<IEnumerable<Word>> GetWordsAsync(params string[] wordNames)
@@ -53,18 +50,16 @@ namespace EnglishTutor.Services
 
         public async Task<Word> UpdateWordAsync(Word word)
         {
-            return await SendRequest(new HttpMethod("PATCH")
+            return await SendRequest<Word>(new HttpMethod("PATCH")
                , $"vocabulary/{word.Name}.json"
-               , word
-               , async str => await Task.FromResult(word));
+               , word);
         }
 
         public async Task<Statistic> UpdateStatisticAsync(string userId, Statistic statistic)
         {
-            return await SendRequest(new HttpMethod("PATCH")
+            return await SendRequest<Statistic>(new HttpMethod("PATCH")
                , $"users/{userId}/statistics/{statistic.Name}.json"
-               , statistic
-               , async str => await Task.FromResult(statistic));
+               , statistic);
         }
     }
 }

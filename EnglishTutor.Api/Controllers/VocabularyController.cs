@@ -12,11 +12,15 @@ namespace EnglishTutor.Api.Controllers
     {
         private readonly IFirebaseService _firebaseService;
         private readonly IOxforDictionaryService _oxfordDictionaryService;
+        private readonly ITranslateService _translateService;
 
-        public VocabularyController(IFirebaseService firbaseService, IOxforDictionaryService oxfordDictionaryService)
+        public VocabularyController(IFirebaseService firbaseService
+            , IOxforDictionaryService oxfordDictionaryService
+            , ITranslateService translateService)
         {
             _firebaseService = firbaseService;
             _oxfordDictionaryService = oxfordDictionaryService;
+            _translateService = translateService;
         }
 
         [Route("word")]
@@ -38,16 +42,15 @@ namespace EnglishTutor.Api.Controllers
         [HttpGet]
         public async Task<JsonResult> GetLastWordsJsonAsync(int? limitTo)
         {
-            return await ExecuteResult( async () =>
-            {
-                var wordStatistics = await _firebaseService.GetStatisticAsync(UserId, limitTo);
 
-                var wordNames = wordStatistics
-                    .Select(s => s.Name)
-                    .ToArray();
+            var wordStatistics = await _firebaseService.GetStatisticAsync(UserId, limitTo);
 
-                return await _firebaseService.GetWordsAsync(wordNames);
-            });
+            var wordNames = wordStatistics
+                .Select(s => s.Name)
+                .ToArray();
+
+            var res = await _firebaseService.GetWordsAsync(wordNames);
+            return GenerateJsonResult(res);
         }
 
         [Route("normalizedWord")]
@@ -67,5 +70,16 @@ namespace EnglishTutor.Api.Controllers
 
             return GenerateResult(word);
         }
+
+        [Route("translate")]
+        [HttpGet]
+        public async Task<ResponseModel<string>> Translate(string from, string to, string text)
+        {
+            var res = await _translateService.Translate(from, to , text);
+
+            return GenerateResult(res);
+        }
+
+
     }
 }
