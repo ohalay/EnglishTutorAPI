@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
+using EnglishTutor.Common.Exception;
 
 namespace EnglishTutor.Services
 {
@@ -29,9 +30,11 @@ namespace EnglishTutor.Services
         {
             try
             {
-                var requestMessage = new HttpRequestMessage(method, $"{BaseUrl.AbsoluteUri}{url}");
-                requestMessage.Content = new StringContent(JsonConvert.SerializeObject(body));
-               
+                var requestMessage = new HttpRequestMessage(method, $"{BaseUrl.AbsoluteUri}{url}")
+                {
+                    Content = new StringContent(JsonConvert.SerializeObject(body))
+                };
+
                 foreach(var item in GetCustomHeaders())
                 {
                     requestMessage.Headers.Add(item.Item1, item.Item2);
@@ -50,7 +53,10 @@ namespace EnglishTutor.Services
             }
             catch(HttpRequestException e)
             {
-                throw;
+                throw new ApiException(ApiError.AccessForbidden)
+                {
+                    ErrorData = e.Message
+                };
             }
         }
     }

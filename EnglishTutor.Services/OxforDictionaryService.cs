@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using EnglishTutor.Common;
 using Microsoft.Extensions.Options;
 using System.Net.Http;
+using EnglishTutor.Common.AppSettings;
 using Newtonsoft.Json;
 
 namespace EnglishTutor.Services
@@ -14,20 +15,20 @@ namespace EnglishTutor.Services
     {
         private const string LANG = "en";
 
-        private AppSettings _appSettings;
+        private readonly OxforDictionary _oxfordDictionarySettings;
 
-        public OxforDictionaryService(IOptions<AppSettings> optionAppSettings)
+        public OxforDictionaryService(IOptions<OxforDictionary> optionOxforDictionary)
         {
-            _appSettings = optionAppSettings.Value;
+            _oxfordDictionarySettings = optionOxforDictionary.Value;
         }
-        protected override Uri BaseUrl => _appSettings.OxforDictionary.BaseUrl;
+        protected override Uri BaseUrl => _oxfordDictionarySettings.BaseUrl;
 
         protected override IEnumerable<Tuple<string, string>> GetCustomHeaders()
         {
             return new List<Tuple<string, string>>
             {
-                new Tuple<string, string>("app_id", _appSettings.OxforDictionary.AppId),
-                new Tuple<string, string>("app_key", _appSettings.OxforDictionary.AppKey),
+                new Tuple<string, string>("app_id", _oxfordDictionarySettings.AppId),
+                new Tuple<string, string>("app_key", _oxfordDictionarySettings.AppKey),
             };
         }
 

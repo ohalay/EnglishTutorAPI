@@ -5,21 +5,21 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Net.Http;
 using Newtonsoft.Json;
-using EnglishTutor.Common;
+using EnglishTutor.Common.AppSettings;
 using Microsoft.Extensions.Options;
 
 namespace EnglishTutor.Services
 {
     public class FirebaseService : BaseService, IFirebaseService
     {
-        private AppSettings _appSettings;
+        private readonly Firebase _firebaseSettins;
 
-        public FirebaseService(IOptions<AppSettings> optionAppSettings)
+        public FirebaseService(IOptions<Firebase> optionFirebase)
         {
-            _appSettings = optionAppSettings.Value;
+            _firebaseSettins = optionFirebase.Value;
         }
 
-        protected override Uri BaseUrl => _appSettings.Firebase.BaseUrl;
+        protected override Uri BaseUrl => _firebaseSettins.BaseUrl;
 
         private async Task<Word> GetWordAsync(string name)
         {

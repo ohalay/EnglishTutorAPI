@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace EnglishTutor.Api.Controllers
 {
@@ -28,6 +29,21 @@ namespace EnglishTutor.Api.Controllers
         protected string UserId
         {
             get { return "115787596179138188666"; }
+        }
+
+        protected async Task<JsonResult> ExecuteResult<T>(Func<Task<T>> func)
+        {
+            try
+            {
+                var res = await func();
+                var jsonResult = new JsonResult(GenerateResult(res));
+                return jsonResult;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
         }
     }
 }

@@ -1,11 +1,15 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using System.IO;
+using EnglishTutor.Api.Configuration;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using EnglishTutor.Common.Interfaces;
 using EnglishTutor.Services;
-using EnglishTutor.Common;
+using EnglishTutor.Common.AppSettings;
+using log4net;
+using log4net.Config;
 
 namespace EnglishTutor.Api
 {
@@ -13,6 +17,8 @@ namespace EnglishTutor.Api
     {
         public Startup(IHostingEnvironment env)
         {
+            XmlConfigurator.Configure(LogManager.CreateRepository("log4netRepository"), new FileInfo(Path.Combine(env.ContentRootPath, "log4net.xml")));
+
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
@@ -33,10 +39,13 @@ namespace EnglishTutor.Api
             });
 
             services.AddOptions();
-            services.Configure<AppSettings>(Configuration);
+            services.Configure<OxforDictionary>(Configuration.GetSection("OxforDictionary"));
+            services.Configure<Firebase>(Configuration.GetSection("Firebase"));
 
             services.AddTransient<IFirebaseService, FirebaseService>();
             services.AddTransient<IOxforDictionaryService, OxforDictionaryService>();
+
+            services.AddSingleton(LogManager.GetLogger("log4netRepository", "logger"));
 
 
         }
@@ -47,6 +56,7 @@ namespace EnglishTutor.Api
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 
+            app.UseMiddleware<ErrorHandlingMiddleware>(app.ApplicationServices.GetService<ILog>());
             app.UseMvc();
         }
     }

@@ -10,8 +10,8 @@ namespace EnglishTutor.Api.Controllers
     [Route("api/[controller]")]
     public class VocabularyController : BaseController
     {
-        private IFirebaseService _firebaseService;
-        private IOxforDictionaryService _oxfordDictionaryService;
+        private readonly IFirebaseService _firebaseService;
+        private readonly IOxforDictionaryService _oxfordDictionaryService;
 
         public VocabularyController(IFirebaseService firbaseService, IOxforDictionaryService oxfordDictionaryService)
         {
@@ -32,6 +32,22 @@ namespace EnglishTutor.Api.Controllers
             var wordInfo = await _firebaseService.GetWordsAsync(wordNames);
 
             return GenerateResult(wordInfo);
+        }
+
+        [Route("word1")]
+        [HttpGet]
+        public async Task<JsonResult> GetLastWordsJsonAsync(int? limitTo)
+        {
+            return await ExecuteResult( async () =>
+            {
+                var wordStatistics = await _firebaseService.GetStatisticAsync(UserId, limitTo);
+
+                var wordNames = wordStatistics
+                    .Select(s => s.Name)
+                    .ToArray();
+
+                return await _firebaseService.GetWordsAsync(wordNames);
+            });
         }
 
         [Route("normalizedWord")]

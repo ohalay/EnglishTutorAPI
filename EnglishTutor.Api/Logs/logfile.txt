@@ -1,0 +1,5 @@
+﻿2017-03-17 13:45:30,691 Level: ERROR - message: Response status code does not indicate success: 400 (Bad Request).   
+2017-03-17 13:46:40,313 Level: ERROR - message: Response status code does not indicate success: 400 (Bad Request).   
+2017-03-17 15:07:00,700 Level: ERROR - message:    
+2017-03-17 15:09:57,731 Level: ERROR - message: {}   
+2017-03-17 15:13:23,818 Level: ERROR - message: Response status code does not indicate success: 400 (Bad Request).   
