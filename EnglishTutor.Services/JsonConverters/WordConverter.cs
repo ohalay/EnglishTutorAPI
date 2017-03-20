@@ -28,11 +28,11 @@ namespace EnglishTutor.Services.JsonConverters
                 word.AudioFilePath = pronunciaton.Value<string>("audioFile");
             }
 
-            var sense = lexicalEntry.SelectToken("entries[0].senses[0]");
+            var sense = lexicalEntry.SelectTokens("entries[0].senses[?(@.examples)]").First();
             if (sense.HasValues)
             {
                 word.Defination = (string)sense.SelectToken("definitions[0]");
-                word.Examples = sense.SelectTokens("examples")
+                word.Examples = sense.SelectToken("examples")
                     .Select(s => s.Value<string>("text"))
                     .ToArray();
             }

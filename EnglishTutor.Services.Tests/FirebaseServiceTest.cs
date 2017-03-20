@@ -29,7 +29,7 @@ namespace EnglishTutor.Services.Tests
         public async Task GetStatisticsShouldSucceed()
         {
             const int expectedLen = 3;
-            var words = await _service.GetStatisticAsync("115787596179138188666", expectedLen);
+            var words = await _service.GetStatisticsAsync("115787596179138188666", expectedLen);
 
             Assert.IsNotNull(words);
             Assert.AreEqual(expectedLen, words.Count());

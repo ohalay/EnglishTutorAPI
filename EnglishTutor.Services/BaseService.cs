@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using EnglishTutor.Common.Exception;
+using Newtonsoft.Json.Serialization;
 
 namespace EnglishTutor.Services
 {
@@ -33,7 +34,10 @@ namespace EnglishTutor.Services
                 var requestMessage = new HttpRequestMessage(method, $"{BaseUrl.AbsoluteUri}{url}");
 
                 if (body != null)
-                    requestMessage.Content = new StringContent(JsonConvert.SerializeObject(body));
+                    requestMessage.Content = new StringContent(JsonConvert.SerializeObject(body, new JsonSerializerSettings()
+                    {
+                        ContractResolver = new CamelCasePropertyNamesContractResolver()
+                    } ));
 
                 foreach (var item in GetCustomHeaders())
                 {

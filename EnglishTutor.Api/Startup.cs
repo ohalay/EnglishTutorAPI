@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using AutoMapper;
 using EnglishTutor.Api.Configuration;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -41,6 +42,8 @@ namespace EnglishTutor.Api
             {
                 option.SerializerSettings.NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore;
             });
+
+            services.AddAutoMapper(typeof(Startup));
 
             services.AddOptions();
             services.Configure<OxforDictionary>(Configuration.GetSection("OxforDictionary"));

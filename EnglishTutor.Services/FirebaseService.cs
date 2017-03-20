@@ -26,7 +26,7 @@ namespace EnglishTutor.Services
             return await SendRequest<Word>(HttpMethod.Get, $"vocabulary/{name}.json");
         }
 
-        public async Task<IEnumerable<Statistic>> GetStatisticAsync(string userId, int? limitTo)
+        public async Task<IEnumerable<Statistic>> GetStatisticsAsync(string userId, int? limitTo)
         {
             return await SendRequest<IEnumerable<Statistic>>(HttpMethod.Get
                 , $"users/{userId}/statistics.json?orderBy=\"timestamp\"&limitToLast={limitTo}"
@@ -50,16 +50,40 @@ namespace EnglishTutor.Services
 
         public async Task<Word> UpdateWordAsync(Word word)
         {
+            var name = word.Name;
+            word.Name = null;
+
             return await SendRequest<Word>(new HttpMethod("PATCH")
-               , $"vocabulary/{word.Name}.json"
+               , $"vocabulary/{name}.json"
                , word);
         }
 
-        public async Task<Statistic> UpdateStatisticAsync(string userId, Statistic statistic)
+        public async Task<Statistic> UpdateWordStatisticAsync(string userId, Statistic statistic)
         {
+            var name = statistic.Name;
+            statistic.Name = null;
             return await SendRequest<Statistic>(new HttpMethod("PATCH")
-               , $"users/{userId}/statistics/{statistic.Name}.json"
+               , $"users/{userId}/statistics/{name}.json"
                , statistic);
+        }
+
+        public async Task<User> GetUser(string userId)
+        {
+            return await SendRequest<User>(HttpMethod.Get
+               , $"users/{userId}.json");
+        }
+
+        public async Task<User> CreateUser(string userId, User user)
+        {
+            return await SendRequest<User>(new HttpMethod("PATCH")
+               , $"users/{userId}.json"
+               , user);
+        }
+
+        public async Task<Statistic> GetWordStatisticAsync(string userId, string name)
+        {
+            return await SendRequest<Statistic>(HttpMethod.Get
+                , $"users/{userId}/statistics/{name}.json");
         }
     }
 }

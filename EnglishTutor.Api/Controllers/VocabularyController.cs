@@ -1,8 +1,8 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using EnglishTutor.Common.Interfaces;
 using EnglishTutor.Common.Dto;
-using EnglishTutor.Api.Models;
 using System.Linq;
 
 namespace EnglishTutor.Api.Controllers
@@ -25,9 +25,9 @@ namespace EnglishTutor.Api.Controllers
 
         [Route("word")]
         [HttpGet]
-        public async Task<ResponseModel<Word>> GetLastWordsAsync(int? limitTo)
+        public async Task<JsonResult> GetLastWordsAsync(int? limitTo)
         {
-            var wordStatistics = await _firebaseService.GetStatisticAsync(UserId, limitTo);
+            var wordStatistics = await _firebaseService.GetStatisticsAsync(UserId, limitTo);
 
             var wordNames = wordStatistics
                 .Select(s => s.Name)
@@ -35,49 +35,65 @@ namespace EnglishTutor.Api.Controllers
 
             var wordInfo = await _firebaseService.GetWordsAsync(wordNames);
 
-            return GenerateResult(wordInfo);
+            return GenerateJsonResult(wordInfo);
         }
 
-        [Route("word1")]
-        [HttpGet]
-        public async Task<JsonResult> GetLastWordsJsonAsync(int? limitTo)
+        [Route("word/{name}")]
+        [HttpPost]
+        public async Task<JsonResult> AddWord(string name)
         {
+            var normalizedWord = await _oxfordDictionaryService.GetNormalizedWordAsync(name);
+            var wordStatistic = await _firebaseService.GetWordStatisticAsync(UserId, normalizedWord);
 
-            var wordStatistics = await _firebaseService.GetStatisticAsync(UserId, limitTo);
+            var timestamp = DateTime.UtcNow.Ticks;
+            if (wordStatistic != null)
+            {
+                ++wordStatistic.AddAmount;
+                wordStatistic.LastAdded = timestamp;
+            }
+            else
+            {
+                wordStatistic = new Statistic
+                {
+                    Name = normalizedWord,
+                    AddAmount = 1,
+                    LastAdded = timestamp,
+                    Timestamp = timestamp,
+                    TaranslateAmount = 0,
+                    LastTranslated = 0
+                };
 
-            var wordNames = wordStatistics
-                .Select(s => s.Name)
-                .ToArray();
+                var word = UpdateWord(normalizedWord);
+            }
 
-            var res = await _firebaseService.GetWordsAsync(wordNames);
-            return GenerateJsonResult(res);
+            var statistic = _firebaseService.UpdateWordStatisticAsync(UserId, wordStatistic);
+
+            return GenerateJsonResult(normalizedWord);
         }
 
-        [Route("normalizedWord")]
-        [HttpGet]
-        public async Task<ResponseModel<string>> GetNormalizedWordAsync(string name)
-        {
-            var word = await _oxfordDictionaryService.GetNormalizedWordAsync(name);
-
-            return GenerateResult(word);
-        }
-
-        [Route("odWord")]
-        [HttpGet]
-        public async Task<ResponseModel<Word>> GetODWordAsync(string name)
+        private async Task UpdateWord(string name)
         {
             var word = await _oxfordDictionaryService.GetWordAsync(name);
-
-            return GenerateResult(word);
+            word.Name = name;
+            await _firebaseService.UpdateWordAsync(word);
         }
 
-        [Route("translate")]
+        [Route("word/{name}/translate")]
         [HttpGet]
-        public async Task<ResponseModel<string>> Translate(string from, string to, string text)
+        public async Task<JsonResult> Translate(string to, string name)
         {
-            var res = await _translateService.Translate(from, to , text);
+            const string FROM = "en";
 
-            return GenerateResult(res);
+            var wordStatistic = await _firebaseService.GetWordStatisticAsync(UserId, name);
+
+            wordStatistic.LastTranslated = DateTime.UtcNow.Ticks;
+            ++wordStatistic.TaranslateAmount;
+
+            await _firebaseService.UpdateWordStatisticAsync(UserId, wordStatistic);
+
+            var res = await _translateService.Translate(FROM, to, name);
+
+            return GenerateJsonResult(res);
         }
 
 

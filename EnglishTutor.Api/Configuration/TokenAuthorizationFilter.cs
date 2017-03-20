@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Primitives;
 using System.Linq;
-using System;
 using System.Security.Claims;
 using EnglishTutor.Common.Exception;
 using EnglishTutor.Common.Interfaces;

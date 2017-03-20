@@ -6,7 +6,6 @@ namespace EnglishTutor.Api.Configuration
 
     public interface ITokenPrincipal
     {
-
     }
 
     public class TokenPrincipal: ITokenPrincipal, IPrincipal
