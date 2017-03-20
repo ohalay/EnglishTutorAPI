@@ -33,7 +33,11 @@ namespace EnglishTutor.Api
         public void ConfigureServices(IServiceCollection services)
         {
             // Add framework services.
-            services.AddMvc().AddJsonOptions(option => 
+            services.AddMvc(opt => 
+            {
+                opt.Filters.Add(typeof(TokenAuthorizationFilter));
+
+            }).AddJsonOptions(option => 
             {
                 option.SerializerSettings.NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore;
             });
@@ -42,10 +46,12 @@ namespace EnglishTutor.Api
             services.Configure<OxforDictionary>(Configuration.GetSection("OxforDictionary"));
             services.Configure<Firebase>(Configuration.GetSection("Firebase"));
             services.Configure<Translate>(Configuration.GetSection("Translate"));
+            services.Configure<Account>(Configuration.GetSection("Account"));
 
             services.AddTransient<IFirebaseService, FirebaseService>();
             services.AddTransient<IOxforDictionaryService, OxforDictionaryService>();
             services.AddTransient<ITranslateService, TranslateService>();
+            services.AddTransient<IAccountService, AccountService>();
 
             services.AddSingleton(LogManager.GetLogger("log4netRepository", "logger"));
 
