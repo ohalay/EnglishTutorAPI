@@ -1,18 +1,17 @@
 ﻿using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Primitives;
 using System.Linq;
 using System;
+using System.Security.Claims;
 using EnglishTutor.Common.Exception;
 using EnglishTutor.Common.Interfaces;
-using System.Security.Principal;
 
 namespace EnglishTutor.Api.Configuration
 {
     public class TokenAuthorizationFilter : IAsyncAuthorizationFilter
     {
-        private IAccountService _accountService;
+        private readonly IAccountService _accountService;
 
         public TokenAuthorizationFilter(IAccountService accountService)
         {
@@ -28,15 +27,16 @@ namespace EnglishTutor.Api.Configuration
                 var token = values.FirstOrDefault(s => s.StartsWith(BEARER));
                 if (token != null)
                 {
-                    var userId = await ValidateToken(token.Split(' ')[1]);
-                    //context.HttpContext.User = new System.Security.Claims.ClaimsPrincipal()
+                    var userId = await ValidateToken(token.Substring(BEARER.Length));
+                    var principal = new TokenPrincipal(userId);
+                    context.HttpContext.User = new ClaimsPrincipal(principal);
+                    return;
                 }
             }
             
             throw new ApiException(ApiError.Unauthorized);
         }
 
-        
 
         private async Task<string> ValidateToken(string token)
         {
@@ -45,7 +45,7 @@ namespace EnglishTutor.Api.Configuration
                 return await _accountService.ValidateTokenAsync(token);
             
             }
-            catch(Exception e)
+            catch(ApiException)
             {
                 throw new ApiException(ApiError.Unauthorized);
             }

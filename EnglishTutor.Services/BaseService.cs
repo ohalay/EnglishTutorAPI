@@ -30,12 +30,12 @@ namespace EnglishTutor.Services
         {
             try
             {
-                var requestMessage = new HttpRequestMessage(method, $"{BaseUrl.AbsoluteUri}{url}")
-                {
-                    Content = new StringContent(JsonConvert.SerializeObject(body))
-                };
+                var requestMessage = new HttpRequestMessage(method, $"{BaseUrl.AbsoluteUri}{url}");
 
-                foreach(var item in GetCustomHeaders())
+                if (body != null)
+                    requestMessage.Content = new StringContent(JsonConvert.SerializeObject(body));
+
+                foreach (var item in GetCustomHeaders())
                 {
                     requestMessage.Headers.Add(item.Item1, item.Item2);
                 }

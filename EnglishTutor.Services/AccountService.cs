@@ -1,7 +1,5 @@
 ﻿using EnglishTutor.Common.Interfaces;
 using System;
-using EnglishTutor.Common.Dto;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Net.Http;
 using EnglishTutor.Common.AppSettings;
@@ -12,7 +10,7 @@ namespace EnglishTutor.Services
 {
     public class AccountService : BaseService, IAccountService
     {
-        private Account _optionSettings;
+        private readonly Account _optionSettings;
 
         public AccountService(IOptions<Account> optionAccount)
         {
@@ -24,8 +22,7 @@ namespace EnglishTutor.Services
         {
             return await SendRequest<string>(HttpMethod.Get
                 , $"tokeninfo?access_token={token}"
-                , null
-                , new JPathConverter("sub"));
+                , deserializeConverter : new JPathConverter("sub"));
         }
     }
 }
