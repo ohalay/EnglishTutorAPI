@@ -8,7 +8,7 @@ using AutoMapper;
 
 namespace EnglishTutor.Api.Controllers
 {
-    [Route("api/[controller]")]
+    //[Route("api/[controller]")]
     public class UserController : BaseController
     {
         private readonly IFirebaseService _firebaseService;

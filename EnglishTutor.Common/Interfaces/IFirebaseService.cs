@@ -14,6 +14,8 @@ namespace EnglishTutor.Common.Interfaces
 
         Task<Word> UpdateWordAsync(Word word);
 
+        Task<string> UpdateWordTranslation(string name, string leng, string translation);
+
         Task<Statistic> UpdateWordStatisticAsync(string userId, Statistic statistic);
 
         Task<User> GetUser(string userId);

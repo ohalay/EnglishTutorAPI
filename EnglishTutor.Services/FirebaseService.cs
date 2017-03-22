@@ -80,5 +80,12 @@ namespace EnglishTutor.Services
             return await SendRequest<Statistic>(HttpMethod.Get
                 , $"users/{userId}/statistics/{name}.json");
         }
+
+        public async Task<string> UpdateWordTranslation(string name, string leng, string translation)
+        {
+            return await SendRequest<string>(new HttpMethod("PATCH")
+               , $"vocabulary/{name}/translations/{leng}.json"
+               , translation);
+        }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using EnglishTutor.Common.Interfaces;
@@ -7,7 +8,6 @@ using System.Linq;
 
 namespace EnglishTutor.Api.Controllers
 {
-    [Route("api/[controller]")]
     public class VocabularyController : BaseController
     {
         private readonly IFirebaseService _firebaseService;
@@ -26,9 +26,9 @@ namespace EnglishTutor.Api.Controllers
             _searchImageService = searchImageService;
         }
 
-        [Route("word")]
+        [Route("{leng}/words")]
         [HttpGet]
-        public async Task<JsonResult> GetLastWordsAsync(int? limitTo)
+        public async Task<JsonResult> GetLastWordsAsync(string leng, int? limitTo = 6)
         {
             var wordStatistics = await _firebaseService.GetStatisticsAsync(UserId, limitTo);
 
@@ -41,12 +41,14 @@ namespace EnglishTutor.Api.Controllers
             return GenerateJsonResult(wordInfo);
         }
 
-        [Route("word/{name}")]
+        [Route("{leng}/word/{name}")]
         [HttpPost]
-        public async Task<JsonResult> AddWord(string name)
+        public async Task<JsonResult> AddWord(string leng, string name)
         {
             var normalizedWord = await _oxfordDictionaryService.GetNormalizedWordAsync(name);
             var wordStatistic = await _firebaseService.GetWordStatisticAsync(UserId, normalizedWord);
+
+            var tasks = new List<Task>(2);
 
             var timestamp = DateTime.UtcNow.Ticks;
             if (wordStatistic != null)
@@ -66,42 +68,54 @@ namespace EnglishTutor.Api.Controllers
                     LastTranslated = 0
                 };
 
-                var word = UpdateWord(normalizedWord);
+                var updateWordTask = UpdateWord(leng, normalizedWord);
+                tasks.Add(updateWordTask);
             }
 
-            var statistic = _firebaseService.UpdateWordStatisticAsync(UserId, wordStatistic);
+            var updateStatisticTask = _firebaseService.UpdateWordStatisticAsync(UserId, wordStatistic);
+            tasks.Add(updateStatisticTask);
+
+            Task.WaitAll(tasks.ToArray());
 
             return GenerateJsonResult(normalizedWord);
+
         }
 
-        private async Task UpdateWord(string name)
+        private async Task UpdateWord(string leng, string name)
         {
             var imagesTask = _searchImageService.GetImages(name, 3);
+            var translationTask = _translateService.Translate(leng, name);
             var word = await _oxfordDictionaryService.GetWordAsync(name);
 
             word.Name = name;
-            word.Images = await imagesTask;
+
+            Task.WaitAll(translationTask, imagesTask);
+            word.Images = imagesTask.Result;
+            word.Translations.Add(leng, translationTask.Result);
 
             await _firebaseService.UpdateWordAsync(word);
         }
 
-        [Route("word/{name}/translate")]
+        [Route("{leng}/word/{name}/translate")]
         [HttpGet]
-        public async Task<JsonResult> Translate(string to, string name)
+        public async Task<JsonResult> Translate(string leng, string name)
         {
-            var res = _translateService.Translate(to, name);
+            var translationTask = _translateService.Translate(leng, name);
 
             var wordStatistic = await _firebaseService.GetWordStatisticAsync(UserId, name);
 
+            wordStatistic.Name = name;
             wordStatistic.LastTranslated = DateTime.UtcNow.Ticks;
             ++wordStatistic.TaranslateAmount;
 
-            await _firebaseService.UpdateWordStatisticAsync(UserId, wordStatistic);
+            var updateWordTask = _firebaseService.UpdateWordStatisticAsync(UserId, wordStatistic);
 
-           
-            return GenerateJsonResult(await res);
+            var translation = await translationTask;
+
+            var updateTranslationTask = _firebaseService.UpdateWordTranslation(name, leng, translation);
+
+            Task.WaitAll(updateTranslationTask, updateWordTask);
+            return GenerateJsonResult(translation);
         }
-
-
     }
 }

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 namespace EnglishTutor.Api.Controllers
 {
+    [Route("api/v1/[controller]")]
     public class BaseController : Controller
     {
         protected ResponseModel<T> GenerateResult<T>(IEnumerable<T> input)
