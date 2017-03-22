@@ -17,12 +17,9 @@ namespace EnglishTutor.Api.Controllers
             };
         }
 
-        protected ResponseModel<T> GenerateResult<T>(T input)
+        protected T GenerateResult<T>(T input)
         {
-            return new ResponseModel<T>
-            {
-                Result = new List<T> { input },
-            };
+            return input;
         }
 
         protected string UserId => User.Identity.Name;

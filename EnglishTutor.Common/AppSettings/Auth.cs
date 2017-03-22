@@ -1,6 +1,7 @@
 ﻿namespace EnglishTutor.Common.AppSettings
 {
-    public class Translate : ServiceSetting
+    public class Auth : ServiceSetting
     {
+        
     }
 }

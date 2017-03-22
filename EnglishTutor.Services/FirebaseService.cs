@@ -1,5 +1,4 @@
 ﻿using EnglishTutor.Common.Interfaces;
-using System;
 using EnglishTutor.Common.Dto;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -10,16 +9,12 @@ using Microsoft.Extensions.Options;
 
 namespace EnglishTutor.Services
 {
-    public class FirebaseService : BaseService, IFirebaseService
+    public class FirebaseService : BaseService<Firebase>, IFirebaseService
     {
-        private readonly Firebase _firebaseSettins;
 
-        public FirebaseService(IOptions<Firebase> optionFirebase)
+        public FirebaseService(IOptions<Firebase> option) : base(option)
         {
-            _firebaseSettins = optionFirebase.Value;
         }
-
-        protected override Uri BaseUrl => _firebaseSettins.BaseUrl;
 
         private async Task<Word> GetWordAsync(string name)
         {

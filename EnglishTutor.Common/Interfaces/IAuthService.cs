@@ -2,7 +2,7 @@
 
 namespace EnglishTutor.Common.Interfaces
 {
-    public interface IAccountService
+    public interface IAuthService
     {
         Task<string> ValidateTokenAsync(string token);
     }

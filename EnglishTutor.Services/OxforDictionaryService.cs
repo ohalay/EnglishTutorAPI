@@ -10,24 +10,18 @@ using EnglishTutor.Services.JsonConverters;
 
 namespace EnglishTutor.Services
 {
-    public class OxforDictionaryService : BaseService, IOxforDictionaryService
+    public class OxforDictionaryService : BaseService<OxforDictionary>, IOxforDictionaryService
     {
-        private const string LANG = "en";
-
-        private readonly OxforDictionary _oxfordDictionarySettings;
-
-        public OxforDictionaryService(IOptions<OxforDictionary> optionOxforDictionary)
-        {
-            _oxfordDictionarySettings = optionOxforDictionary.Value;
+        public OxforDictionaryService(IOptions<OxforDictionary> option) : base(option)
+        { 
         }
-        protected override Uri BaseUrl => _oxfordDictionarySettings.BaseUrl;
-
+    
         protected override IEnumerable<Tuple<string, string>> GetCustomHeaders()
         {
             return new List<Tuple<string, string>>
             {
-                new Tuple<string, string>("app_id", _oxfordDictionarySettings.AppId),
-                new Tuple<string, string>("app_key", _oxfordDictionarySettings.AppKey),
+                new Tuple<string, string>("app_id", ServiceSttings.ApiId),
+                new Tuple<string, string>("app_key", ServiceSttings.ApiKey),
             };
         }
 

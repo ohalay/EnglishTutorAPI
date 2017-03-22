@@ -13,14 +13,17 @@ namespace EnglishTutor.Api.Controllers
         private readonly IFirebaseService _firebaseService;
         private readonly IOxforDictionaryService _oxfordDictionaryService;
         private readonly ITranslateService _translateService;
+        private readonly ISearchImageService _searchImageService;
 
         public VocabularyController(IFirebaseService firbaseService
             , IOxforDictionaryService oxfordDictionaryService
-            , ITranslateService translateService)
+            , ITranslateService translateService
+            , ISearchImageService searchImageService)
         {
             _firebaseService = firbaseService;
             _oxfordDictionaryService = oxfordDictionaryService;
             _translateService = translateService;
+            _searchImageService = searchImageService;
         }
 
         [Route("word")]
@@ -73,8 +76,12 @@ namespace EnglishTutor.Api.Controllers
 
         private async Task UpdateWord(string name)
         {
+            var imagesTask = _searchImageService.GetImages(name, 3);
             var word = await _oxfordDictionaryService.GetWordAsync(name);
+
             word.Name = name;
+            word.Images = await imagesTask;
+
             await _firebaseService.UpdateWordAsync(word);
         }
 
@@ -82,7 +89,7 @@ namespace EnglishTutor.Api.Controllers
         [HttpGet]
         public async Task<JsonResult> Translate(string to, string name)
         {
-            const string FROM = "en";
+            var res = _translateService.Translate(to, name);
 
             var wordStatistic = await _firebaseService.GetWordStatisticAsync(UserId, name);
 
@@ -91,9 +98,8 @@ namespace EnglishTutor.Api.Controllers
 
             await _firebaseService.UpdateWordStatisticAsync(UserId, wordStatistic);
 
-            var res = await _translateService.Translate(FROM, to, name);
-
-            return GenerateJsonResult(res);
+           
+            return GenerateJsonResult(await res);
         }
 
 

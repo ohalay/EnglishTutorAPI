@@ -2,7 +2,7 @@
 
 namespace EnglishTutor.Common.AppSettings
 {
-    public class Account
+    public class ServiceSetting
     {
         public Uri BaseUrl { get; set; }
     }

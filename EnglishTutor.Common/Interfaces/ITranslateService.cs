@@ -4,6 +4,6 @@ namespace EnglishTutor.Common.Interfaces
 {
     public interface ITranslateService
     {
-        Task<string> Translate(string from, string to, string text);
+        Task<string> Translate(string to, string text);
     }
 }

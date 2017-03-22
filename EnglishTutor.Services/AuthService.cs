@@ -1,5 +1,4 @@
 ﻿using EnglishTutor.Common.Interfaces;
-using System;
 using System.Threading.Tasks;
 using System.Net.Http;
 using EnglishTutor.Common.AppSettings;
@@ -8,15 +7,11 @@ using Microsoft.Extensions.Options;
 
 namespace EnglishTutor.Services
 {
-    public class AccountService : BaseService, IAccountService
+    public class AuthService : BaseService<Auth>, IAuthService
     {
-        private readonly Account _optionSettings;
-
-        public AccountService(IOptions<Account> optionAccount)
+        public AuthService(IOptions<Auth> option) : base(option)
         {
-            _optionSettings = optionAccount.Value;
         }
-        protected override Uri BaseUrl => _optionSettings.BaseUrl;
 
         public async Task<string> ValidateTokenAsync(string token)
         {

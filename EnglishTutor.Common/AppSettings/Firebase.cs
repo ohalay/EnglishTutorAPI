@@ -2,8 +2,7 @@
 
 namespace EnglishTutor.Common.AppSettings
 {
-    public class Firebase
+    public class Firebase : ServiceSetting
     {
-        public Uri BaseUrl { get; set; }
     }
 }

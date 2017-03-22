@@ -49,12 +49,14 @@ namespace EnglishTutor.Api
             services.Configure<OxforDictionary>(Configuration.GetSection("OxforDictionary"));
             services.Configure<Firebase>(Configuration.GetSection("Firebase"));
             services.Configure<Translate>(Configuration.GetSection("Translate"));
-            services.Configure<Account>(Configuration.GetSection("Account"));
+            services.Configure<Auth>(Configuration.GetSection("Auth"));
+            services.Configure<SearchImage>(Configuration.GetSection("SearchImage"));
 
             services.AddTransient<IFirebaseService, FirebaseService>();
             services.AddTransient<IOxforDictionaryService, OxforDictionaryService>();
             services.AddTransient<ITranslateService, TranslateService>();
-            services.AddTransient<IAccountService, AccountService>();
+            services.AddTransient<IAuthService, AuthService>();
+            services.AddTransient<ISearchImageService, SearchImageService>();
 
             services.AddSingleton(LogManager.GetLogger("log4netRepository", "logger"));
 

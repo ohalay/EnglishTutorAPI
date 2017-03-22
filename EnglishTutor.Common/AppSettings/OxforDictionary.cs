@@ -2,10 +2,9 @@
 
 namespace EnglishTutor.Common.AppSettings
 {
-    public class OxforDictionary
+    public class OxforDictionary : ServiceSetting
     {
-        public Uri BaseUrl { get; set; }
-        public string AppId { get; set; }
-        public string AppKey { get; set; }
+        public string ApiId { get; set; }
+        public string ApiKey { get; set; }
     }
 }

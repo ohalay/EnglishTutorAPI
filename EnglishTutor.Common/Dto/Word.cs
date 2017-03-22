@@ -1,4 +1,6 @@
-﻿namespace EnglishTutor.Common.Dto
+﻿using System.Collections.Generic;
+
+namespace EnglishTutor.Common.Dto
 {
     public class Word
     {
@@ -7,6 +9,7 @@
         public string AudioFilePath { get; set; }
         public string PhoneticSpelling { get; set; }
         public string Translation { get; set; }
-        public string[] Examples { get; set; }
+        public IEnumerable<string> Examples { get; set; }
+        public IEnumerable<string> Images { get; set; }
     }
 }

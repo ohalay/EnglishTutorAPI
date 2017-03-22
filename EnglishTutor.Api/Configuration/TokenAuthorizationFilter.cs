@@ -10,11 +10,11 @@ namespace EnglishTutor.Api.Configuration
 {
     public class TokenAuthorizationFilter : IAsyncAuthorizationFilter
     {
-        private readonly IAccountService _accountService;
+        private readonly IAuthService _authService;
 
-        public TokenAuthorizationFilter(IAccountService accountService)
+        public TokenAuthorizationFilter(IAuthService authService)
         {
-            _accountService = accountService;
+            _authService = authService;
         }
         public async Task OnAuthorizationAsync(AuthorizationFilterContext context)
         {
@@ -41,7 +41,7 @@ namespace EnglishTutor.Api.Configuration
         {
             try
             {
-                return await _accountService.ValidateTokenAsync(token);
+                return await _authService.ValidateTokenAsync(token);
             
             }
             catch(ApiException)
