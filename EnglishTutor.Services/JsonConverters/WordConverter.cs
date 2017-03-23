@@ -17,7 +17,10 @@ namespace EnglishTutor.Services.JsonConverters
         {
             JObject obj = JObject.Load(reader);
 
-            var word = new Word();
+            var word = new Word
+            {
+                Name = (string)obj.SelectToken("results[0].id")
+            };
 
             var lexicalEntry = obj.SelectToken("results[0].lexicalEntries[0]");
 

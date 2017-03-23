@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 using EnglishTutor.Common.Interfaces;
 using EnglishTutor.Common.Dto;
 using System.Linq;
+using AutoMapper;
+using EnglishTutor.Api.Models;
 
 namespace EnglishTutor.Api.Controllers
 {
@@ -18,7 +20,8 @@ namespace EnglishTutor.Api.Controllers
         public VocabularyController(IFirebaseService firbaseService
             , IOxforDictionaryService oxfordDictionaryService
             , ITranslateService translateService
-            , ISearchImageService searchImageService)
+            , ISearchImageService searchImageService
+            , IMapper mapper) : base(mapper)
         {
             _firebaseService = firbaseService;
             _oxfordDictionaryService = oxfordDictionaryService;
@@ -37,8 +40,21 @@ namespace EnglishTutor.Api.Controllers
                 .ToArray();
 
             var wordInfo = await _firebaseService.GetWordsAsync(wordNames);
+            int i = 0;
 
-            return GenerateJsonResult(wordInfo);
+            var result = wordInfo.Select(s =>
+            {
+                var res = Mapper.Map<WordModel>(s);
+                res.Name = wordNames[i++];
+
+                string translation;
+                if  (s.Translations != null && s.Translations.TryGetValue(leng, out translation))
+                    res.Translation = translation;
+                return res;
+            });
+          
+
+            return GenerateJsonResult(result);
         }
 
         [Route("{leng}/word/{name}")]
@@ -46,54 +62,14 @@ namespace EnglishTutor.Api.Controllers
         public async Task<JsonResult> AddWord(string leng, string name)
         {
             var normalizedWord = await _oxfordDictionaryService.GetNormalizedWordAsync(name);
-            var wordStatistic = await _firebaseService.GetWordStatisticAsync(UserId, normalizedWord);
 
-            var tasks = new List<Task>(2);
+            var updateVocabularyWordTask = UpdateVocabularyWord(leng, name);
+            var updateUserWordTask = UpdateUserWord(leng, name);
 
-            var timestamp = DateTime.UtcNow.Ticks;
-            if (wordStatistic != null)
-            {
-                ++wordStatistic.AddAmount;
-                wordStatistic.LastAdded = timestamp;
-            }
-            else
-            {
-                wordStatistic = new Statistic
-                {
-                    Name = normalizedWord,
-                    AddAmount = 1,
-                    LastAdded = timestamp,
-                    Timestamp = timestamp,
-                    TaranslateAmount = 0,
-                    LastTranslated = 0
-                };
-
-                var updateWordTask = UpdateWord(leng, normalizedWord);
-                tasks.Add(updateWordTask);
-            }
-
-            var updateStatisticTask = _firebaseService.UpdateWordStatisticAsync(UserId, wordStatistic);
-            tasks.Add(updateStatisticTask);
-
-            Task.WaitAll(tasks.ToArray());
+            Task.WaitAll(updateUserWordTask, updateVocabularyWordTask);
 
             return GenerateJsonResult(normalizedWord);
 
-        }
-
-        private async Task UpdateWord(string leng, string name)
-        {
-            var imagesTask = _searchImageService.GetImages(name, 3);
-            var translationTask = _translateService.Translate(leng, name);
-            var word = await _oxfordDictionaryService.GetWordAsync(name);
-
-            word.Name = name;
-
-            Task.WaitAll(translationTask, imagesTask);
-            word.Images = imagesTask.Result;
-            word.Translations.Add(leng, translationTask.Result);
-
-            await _firebaseService.UpdateWordAsync(word);
         }
 
         [Route("{leng}/word/{name}/translate")]
@@ -116,6 +92,63 @@ namespace EnglishTutor.Api.Controllers
 
             Task.WaitAll(updateTranslationTask, updateWordTask);
             return GenerateJsonResult(translation);
+        }
+
+        private async Task UpdateVocabularyWord(string leng, string name)
+        {
+            var savedWord = (await _firebaseService.GetWordsAsync(name)).FirstOrDefault();
+            
+            string tarnslation;
+
+            if (savedWord == null)
+            {
+                var wordTask = _oxfordDictionaryService.GetWordAsync(name);
+                var imagesTask = _searchImageService.GetImages(name, 3);
+                var translationTask = _translateService.Translate(leng, name);
+
+                Task.WaitAll(translationTask, imagesTask, wordTask);
+
+                var word = wordTask.Result;
+                word.Name = name;
+                word.Images = imagesTask.Result;
+                word.Translations = new Dictionary<string, string>
+                {
+                    { leng, translationTask.Result }
+                };
+
+                await _firebaseService.UpdateWordAsync(word);
+            }
+            else if (!savedWord.Translations.TryGetValue(leng, out tarnslation))
+            {
+                var translation = await _translateService.Translate(leng, name);
+                await _firebaseService.UpdateWordTranslation(name, leng, translation);
+            }
+        }
+
+        private async Task UpdateUserWord(string leng, string name)
+        {
+            var wordStatistic = await _firebaseService.GetWordStatisticAsync(UserId, name);
+
+            var timestamp = DateTime.UtcNow.Ticks;
+            if (wordStatistic != null)
+            {
+                ++wordStatistic.AddAmount;
+                wordStatistic.LastAdded = timestamp;
+            }
+            else
+            {
+                wordStatistic = new Statistic
+                {
+                    Name = name,
+                    AddAmount = 1,
+                    LastAdded = timestamp,
+                    Timestamp = timestamp,
+                    TaranslateAmount = 0,
+                    LastTranslated = 0
+                };
+            }
+
+            await _firebaseService.UpdateWordStatisticAsync(UserId, wordStatistic);
         }
     }
 }

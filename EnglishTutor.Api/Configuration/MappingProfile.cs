@@ -10,6 +10,9 @@ namespace EnglishTutor.Api.Configuration
         {
             CreateMap<UserModel, User>().ReverseMap();
             CreateMap<SettingsModel, Settings>().ReverseMap();
+
+            CreateMap<Word, WordModel>()
+                .ForMember(dest => dest.Translation, option => option.Ignore());
         }
     }
 }
