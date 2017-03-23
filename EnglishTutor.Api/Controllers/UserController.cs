@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using EnglishTutor.Common.Interfaces;
 using EnglishTutor.Common.Dto;
@@ -18,17 +17,24 @@ namespace EnglishTutor.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<JsonResult> CreateUser([FromBody] UserModel userModel)
+        public async Task<JsonResult> CreateUserAsync([FromBody] UserModel userModel)
         {
-            var savedUser = await _firebaseService.GetUser(UserId);
+            var userSettings = await _firebaseService.GetUserSettings(UserId);
 
-            if (savedUser == null)
-            {
-                var user = Mapper.Map<User>(userModel);
-                savedUser = await _firebaseService.CreateUser(UserId, user);
-            }
+            var user = Mapper.Map<User>(userModel);
 
-            return GenerateJsonResult(Mapper.Map<UserModel>(savedUser));
+            if (userSettings == null)
+                user = await _firebaseService.CreateUser(UserId, user);
+
+            return GenerateJsonResult(Mapper.Map<UserModel>(user));
+        }
+
+        [HttpGet]
+        [Route("settings")]
+        public async Task<JsonResult> GetUserSettingsAsync()
+        {
+            var settings = await _firebaseService.GetUserSettings(UserId);
+            return GenerateJsonResult(Mapper.Map<SettingsModel>(settings));
         }
     }
 }

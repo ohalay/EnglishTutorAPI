@@ -13,6 +13,8 @@ namespace EnglishTutor.Api.Configuration
 
             CreateMap<Word, WordModel>()
                 .ForMember(dest => dest.Translation, option => option.Ignore());
+
+            CreateMap<LanguageModel, LanguageModel>().ReverseMap();
         }
     }
 }

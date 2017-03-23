@@ -62,10 +62,10 @@ namespace EnglishTutor.Services
                , statistic);
         }
 
-        public async Task<User> GetUser(string userId)
+        public async Task<Settings> GetUserSettings(string userId)
         {
-            return await SendRequest<User>(HttpMethod.Get
-               , $"users/{userId}.json");
+            return await SendRequest<Settings>(HttpMethod.Get
+               , $"users/{userId}/settings.json");
         }
 
         public async Task<User> CreateUser(string userId, User user)
@@ -83,9 +83,14 @@ namespace EnglishTutor.Services
 
         public async Task<string> UpdateWordTranslation(string name, string leng, string translation)
         {
-            return await SendRequest<string>(new HttpMethod("PATCH")
-               , $"vocabulary/{name}/translations/{leng}.json"
-               , translation);
+            var res = await SendRequest<Dictionary<string, string>>(new HttpMethod("PATCH")
+               , $"vocabulary/{name}/translations.json"
+               , new Dictionary<string, string>
+                {
+                   {leng, translation }
+                });
+
+            return translation;
         }
     }
 }

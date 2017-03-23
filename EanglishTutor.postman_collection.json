@@ -1,0 +1,161 @@
+{
+	"variables": [],
+	"info": {
+		"name": "EanglishTutor",
+		"_postman_id": "92798546-2374-a37b-4e05-870b0291c929",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Create User",
+			"request": {
+				"url": "{{baseUrl}}/user",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"email\": \"olehhalay@gmail.com\",\n\t\"settings\": {\n\t\t\"imageCount\": 3,\n\t\t\"languageCode\": \"uk\"\n\t}\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "User Settings",
+			"request": {
+				"url": "{{baseUrl}}/user/settings",
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"email\": \"olehhalay@gmail.com\",\n\t\"settings\": {\n\t\t\"imageCount\": 3,\n\t\t\"languageCode\": \"uk\"\n\t}\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Add Word",
+			"request": {
+				"url": "{{baseUrl}}/vocabulary/uk/word/cluster",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"email\": \"olehhalay@gmail.com\",\n\t\"settings\": {\n\t\t\"imageCount\": 3,\n\t\t\"languageCode\": \"uk\"\n\t}\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Translate Word",
+			"request": {
+				"url": "{{baseUrl}}/vocabulary/uk/word/cluster/translate",
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"email\": \"olehhalay@gmail.com\",\n\t\"settings\": {\n\t\t\"imageCount\": 3,\n\t\t\"languageCode\": \"uk\"\n\t}\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Get Last Words",
+			"request": {
+				"url": "{{baseUrl}}/vocabulary/uk/words",
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"email\": \"olehhalay@gmail.com\",\n\t\"settings\": {\n\t\t\"imageCount\": 3,\n\t\t\"languageCode\": \"uk\"\n\t}\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Supported Laguages",
+			"request": {
+				"url": "{{baseUrl}}/information/languages",
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"email\": \"olehhalay@gmail.com\",\n\t\"settings\": {\n\t\t\"imageCount\": 3,\n\t\t\"languageCode\": \"uk\"\n\t}\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		}
+	]
+}

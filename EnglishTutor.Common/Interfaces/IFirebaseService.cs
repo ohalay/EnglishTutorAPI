@@ -18,7 +18,7 @@ namespace EnglishTutor.Common.Interfaces
 
         Task<Statistic> UpdateWordStatisticAsync(string userId, Statistic statistic);
 
-        Task<User> GetUser(string userId);
+        Task<Settings> GetUserSettings(string userId);
 
         Task<User> CreateUser(string userId, User user);
 

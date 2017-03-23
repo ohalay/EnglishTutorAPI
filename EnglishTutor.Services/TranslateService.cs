@@ -1,8 +1,10 @@
-﻿using EnglishTutor.Common.Interfaces;
+﻿using System.Collections.Generic;
+using EnglishTutor.Common.Interfaces;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using System.Net.Http;
 using EnglishTutor.Common.AppSettings;
+using EnglishTutor.Common.Dto;
 using EnglishTutor.Services.JsonConverters;
 
 namespace EnglishTutor.Services
@@ -21,6 +23,12 @@ namespace EnglishTutor.Services
                 , null
                 , new JPathConverter("translationText")
                 );
+        }
+
+        public async Task<IEnumerable<Language>> GetSupportedLanguages()
+        {
+            return await SendRequest<IEnumerable<Language>>(HttpMethod.Get
+                , "getlanguagesfortranslate");
         }
     }
 }
