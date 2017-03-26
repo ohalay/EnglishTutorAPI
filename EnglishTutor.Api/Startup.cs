@@ -34,6 +34,14 @@ namespace EnglishTutor.Api
         public void ConfigureServices(IServiceCollection services)
         {
             // Add framework services.
+            services.AddCors(options =>
+            {
+                options.AddPolicy("CorsPolicy",
+                    builder => builder.AllowAnyOrigin()
+                        .AllowAnyMethod()
+                        .AllowAnyHeader());
+            });
+
             services.AddMvc(opt => 
             {
                 opt.Filters.Add(typeof(TokenAuthorizationFilter));
@@ -68,6 +76,8 @@ namespace EnglishTutor.Api
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
+
+            app.UseCors("CorsPolicy");
 
             app.UseMiddleware<ErrorHandlingMiddleware>(app.ApplicationServices.GetService<ILog>());
             app.UseMvc();
