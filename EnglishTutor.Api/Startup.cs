@@ -22,11 +22,7 @@ namespace EnglishTutor.Api
             XmlConfigurator.Configure(LogManager.CreateRepository("log4netRepository"), new FileInfo(Path.Combine(env.ContentRootPath, "log4net.xml")));
 
             var builder = new ConfigurationBuilder()
-#if DEBUG
                 .SetBasePath(env.ContentRootPath)
-#elif RELEASE
-                .SetBasePath(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location))
-#endif
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
                 .AddEnvironmentVariables();
