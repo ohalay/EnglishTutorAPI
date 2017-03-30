@@ -31,7 +31,7 @@ namespace EnglishTutor.Services.JsonConverters
                 word.AudioFilePath = pronunciaton.Value<string>("audioFile");
             }
 
-            var sense = lexicalEntry.SelectTokens("entries[0].senses[?(@.examples)]").First();
+            var sense = lexicalEntry.SelectTokens("entries[*].senses[?(@.examples)]").First();
             if (sense.HasValues)
             {
                 word.Defination = (string)sense.SelectToken("definitions[0]");
