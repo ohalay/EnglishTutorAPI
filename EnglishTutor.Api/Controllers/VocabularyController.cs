@@ -91,7 +91,12 @@ namespace EnglishTutor.Api.Controllers
             var updateTranslationTask = _firebaseService.UpdateWordTranslation(name, leng, translation);
 
             Task.WaitAll(updateTranslationTask, updateWordTask);
-            return GenerateJsonResult(translation);
+            return GenerateJsonResult(new TranslationModel
+            {
+                Name = name,
+                Language = leng,
+                Translation = translation
+            });
         }
 
         private async Task UpdateVocabularyWord(string leng, string name)
