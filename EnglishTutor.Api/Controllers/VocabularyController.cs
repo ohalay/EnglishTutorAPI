@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using EnglishTutor.Common.Interfaces;
 using EnglishTutor.Common.Dto;
 using System.Linq;
+using System.Text.RegularExpressions;
 using AutoMapper;
 using EnglishTutor.Api.Models;
 
@@ -62,14 +63,16 @@ namespace EnglishTutor.Api.Controllers
         [HttpPost]
         public async Task<JsonResult> AddWord(string leng, string name)
         {
-            var normalizedWord = await _oxfordDictionaryService.GetNormalizedWordAsync(name);
+            var regex = new Regex("[^a-zA-Z0-9 -]");
+            var allowedChars = regex.Replace(name, "");
+            var normalizedWord = await _oxfordDictionaryService.GetNormalizedWordAsync(allowedChars);
 
-            var updateVocabularyWordTask = UpdateVocabularyWord(leng, name);
-            var updateUserWordTask = UpdateUserWord(leng, name);
+            var updateVocabularyWordTask = UpdateVocabularyWord(leng, normalizedWord);
+            var updateUserWordTask = UpdateUserWord(leng, normalizedWord);
 
             Task.WaitAll(updateUserWordTask, updateVocabularyWordTask);
 
-            return GenerateJsonResult(normalizedWord);
+            return GenerateJsonResult(new {Name = normalizedWord});
 
         }
 
@@ -145,7 +148,6 @@ namespace EnglishTutor.Api.Controllers
             {
                 wordStatistic = new Statistic
                 {
-                    Name = name,
                     AddAmount = 1,
                     LastAdded = timestamp,
                     Timestamp = timestamp,
@@ -154,6 +156,7 @@ namespace EnglishTutor.Api.Controllers
                 };
             }
 
+            wordStatistic.Name = name;
             await _firebaseService.UpdateWordStatisticAsync(UserId, wordStatistic);
         }
     }
