@@ -3,8 +3,8 @@ Description=Asp Net Core server localhost:5000
 After=syslog.target network.target remote-fs.target nss-lookup.target
 
 [Service]
-WorkingDirectory=/tmp/EnglishTutorAPI/EnglishTutor.Api/bin/Release/netcoreapp1.1/publish
-ExecStart=/usr/local/bin/dotnet /tmp/EnglishTutorAPI/EnglishTutor.Api/bin/Release/netcoreapp1.1/publish/EnglishTutor.Api.dll
+WorkingDirectory=/tmp/server
+ExecStart=/usr/local/bin/dotnet /tmp/server/EnglishTutor.Api.dll
 Restart=always
 RestartSec=10
 SyslogIdentifier=et-api

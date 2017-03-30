@@ -36,6 +36,7 @@ namespace EnglishTutor.Api.Controllers
             var wordStatistics = await _firebaseService.GetStatisticsAsync(UserId, limitTo);
 
             var wordNames = wordStatistics
+                .OrderBy(s=>s.Timestamp)
                 .Select(s => s.Name)
                 .ToArray();
 
